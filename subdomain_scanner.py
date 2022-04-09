@@ -3,10 +3,12 @@ import multiprocessing
 
 import url_brute_force
 
-# Other ways to discover subdomains are: dns records, ssl and more.
+# Other ways to discover subdomains are: by dns records, ssl and more.
 # I did not have time to implement it or use other people's existing code
 # but I researched on it and learned the subject
+
 common_ports = [443, 80, 9999, 9000, 3000]
+
 
 class SubDomainScanner:
     def __init__(self, domain):
@@ -28,28 +30,30 @@ class SubDomainScanner:
             print(sub_domain_names)
         return sub_domain_names
 
+    def check_url_and_send_to_brute_force(self, sub_domain_name, port , is_https):
+        p = None
+        url = self.create_url(sub_domain_name, https=True, port=port)
+        print(f'the current sub domain is : {url}')
+        res = requests.get(url)
+        if res.status_code == 200:
+            p = multiprocessing.Process(
+                target=url_brute_force.UrlBruteForce(url).run())
+        return p
+
     def sub_domains_validator(self, sub_domains_names_list):
         proc = list()
         for sub_domain_name in sub_domains_names_list:
             for port in common_ports:
                 try:
-                    url = self.create_url(sub_domain_name, https=True, port=port)
-                    print(f'the current sub domain is : {url}')
-                    res = requests.get(url)
-                    if res.status_code == 200:
-                        p = multiprocessing.Process(
-                            target=url_brute_force.UrlBruteForce(url).run())
+                    p = self.check_url_and_send_to_brute_force(sub_domain_name, port, True)
+                    if p:
                         p.start()
                         proc.append(p)
                         break
                 except requests.ConnectionError:
                     try:
-                        url = self.create_url(sub_domain_name, https=False, port=port)
-                        print(f'the current sub domain is : {url}')
-                        res = requests.get(url)
-                        if res.status_code == 200:
-                            p = multiprocessing.Process(
-                                target=url_brute_force.UrlBruteForce(url).run())
+                        p = self.check_url_and_send_to_brute_force(sub_domain_name, port, False)
+                        if p:
                             p.start()
                             proc.append(p)
                             break
