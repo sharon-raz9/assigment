@@ -6,7 +6,7 @@ _session = requests.Session()
 
 METHODS = ['GET', 'POST']
 SUCCESS_STATUS_CODES = [200, 201, 202, 204]
-USE_URL_PARAMS = USE_JSON_IN_PARAMS = VERIFY_SSL = [True, False]
+USE_URL_PARAMS = USE_JSON_IN_PARAMS = VERIFY_SSL = USE_BASIC_AUTH = [True, False]
 HEADERS = [
     None,
     {'Content-Type': 'application/json'},
@@ -45,6 +45,7 @@ def try_login(method, url, url_params, body_params, headers, basic_auth, use_jso
                                     data=request_data,
                                     json=request_json,
                                     verify=verify_ssl)
+        print(f'status code is: {response.status_code}')
 
         if response.status_code in SUCCESS_STATUS_CODES:
             return True
@@ -65,19 +66,20 @@ def try_logins(username, password, url):
         {'client_id': username, 'client_secret': password},
     ]
 
-    for method, request_param, headers, use_json_in_body, use_url_params, verify_ssl in \
+    for method, request_param, headers, use_json_in_body, use_url_params, verify_ssl, use_basic_auth in \
             itertools.product(METHODS, request_params, HEADERS, USE_JSON_IN_PARAMS,
-                              USE_URL_PARAMS, VERIFY_SSL):
+                              USE_URL_PARAMS, VERIFY_SSL, USE_BASIC_AUTH):
 
         url_params = request_param if use_url_params else None
         body_params = None if use_url_params else request_param
+        basic_auth = (username, password) if use_basic_auth else None
 
         success = try_login(method=method,
                             url=url,
                             url_params=url_params,
                             body_params=body_params,
                             headers=headers,
-                            basic_auth=(username, password),
+                            basic_auth=basic_auth,
                             use_json_in_body=use_json_in_body,
                             verify_ssl=verify_ssl)
         if success:
@@ -86,7 +88,7 @@ def try_logins(username, password, url):
                    f'url_params = {url_params},'
                    f'params = {body_params},'
                    f'headers = {headers},'
-                   # f'basic_auth = {basic_auth}'
+                   f'basic_auth = {(username, password)}'
                    f'use_json_in_body = {use_json_in_body}'
                    f'verify_ssl = {verify_ssl}')
             return success
