@@ -24,6 +24,7 @@ class UrlBruteForce:
 
     def create_url_extension_list(self, extension_file_path):
         robots_extension_list = self.get_extensions_from_robots()
+        # get more extensions from file
         with open(extension_file_path, 'r') as file:
             extension = file.read()
             extension_list = extension.splitlines()
