@@ -13,5 +13,5 @@ if "-d" in sys.argv:
 if __name__ == '__main__':
     for domain in domains_list:
         print(f"Current domain is: {domain}")
-        p = multiprocessing.Process(target=subdomain_scanner.SubDomainScanner(domain).scan())
+        p = multiprocessing.Process(target=subdomain_scanner.SubDomainScanner(domain).scan)
         p.start()
