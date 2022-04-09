@@ -55,7 +55,6 @@ class UrlBruteForce:
                         p = multiprocessing.Process(
                             target=attacker.Attacker(url).attack)
                         p.start()
-                        break
             except requests.ConnectionError:
                 pass
 
