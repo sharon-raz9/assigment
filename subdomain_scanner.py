@@ -38,22 +38,16 @@ class SubDomainScanner:
         if res.status_code == 200:
             p = multiprocessing.Process(
                 target=url_brute_force.UrlBruteForce(url).run)
-        return p
+            p.start()
 
     def sub_domains_validator(self, sub_domains_names_list):
         for sub_domain_name in sub_domains_names_list:
             for port in common_ports:
                 try:
-                    p = self.check_url_and_send_to_brute_force(sub_domain_name, port, True)
-                    if p:
-                        p.start()
-                        break
+                    self.check_url_and_send_to_brute_force(sub_domain_name, port, True)
                 except requests.ConnectionError:
                     try:
-                        p = self.check_url_and_send_to_brute_force(sub_domain_name, port, False)
-                        if p:
-                            p.start()
-                            break
+                        self.check_url_and_send_to_brute_force(sub_domain_name, port, False)
                     except requests.ConnectionError:
                         continue
 
