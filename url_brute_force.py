@@ -1,5 +1,7 @@
 import requests
 
+import attacker
+
 login_words = ['password', 'username', 'login']
 
 
@@ -36,7 +38,7 @@ class UrlBruteForce:
                 result = UrlBruteForce.check_if_login_page(res.text)
                 if result:
                     print(f"{url} is a login page")
-                    # send to attacker
+                    attacker.Attacker(url).attack()
                 break
             except requests.ConnectionError:
                 pass
